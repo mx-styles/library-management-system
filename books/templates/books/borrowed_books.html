@@ -1,0 +1,84 @@
+{% extends 'books/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <h1 class="h3 mb-4 text-primary"><i class="bi bi-bookmark-check-fill me-2"></i> My Borrowing History</h1>
+            {% if borrowed_books %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Borrow Date</th>
+                                <th>Due Date</th>
+                                <th>Return Date</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in borrowed_books %}
+                                <tr {% if record.is_returned %}class="table-light"{% endif %}>
+                                    <td>{{ record.book.title }}</td>
+                                    <td>{{ record.book.author }}</td>
+                                    <td>{{ record.borrow_date|date:"F d, Y" }}</td>
+                                    <td>{{ record.due_date|date:"F d, Y" }}</td>
+                                    <td>{{ record.return_date|date:"F d, Y"|default:"-" }}</td>
+                                    <td class="text-center">
+                                        {% if not record.is_returned %}
+                                            <a href="{% url 'return_book' record.id %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-arrow-return-left me-1"></i> Return</a>
+                                        {% else %}
+                                            <button class="btn btn-outline-secondary btn-sm" disabled><i class="bi bi-arrow-return-left me-1"></i> Returned</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <p class="lead mb-3">You don't have any borrowing history yet.</p>
+                    <a href="{% url 'search_books' %}" class="btn btn-primary btn-lg"><i class="bi bi-search me-2"></i> Find a Book</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if has_active_books %}
+        <div class="card shadow-sm mt-4">
+            <div class="card-body p-4">
+                <h2 class="h5 mb-3 text-info"><i class="bi bi-info-circle-fill me-2"></i> Borrowing Guidelines</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-3">
+                    <div class="col">
+                        <div class="card bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary"><i class="bi bi-calendar-event me-2"></i> Return Dates</h5>
+                                <p class="card-text small">Please return your books by the due date to avoid any late fees. Timely returns help us keep our collection accessible to everyone.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary"><i class="bi bi-stack me-2"></i> Maximum Books</h5>
+                                <p class="card-text small">You are welcome to borrow up to 5 books at any given time. This allows more users to enjoy our diverse collection.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card bg-light border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-secondary"><i class="bi bi-hourglass-split me-2"></i> Borrowing Period</h5>
+                                <p class="card-text small">Each book can be borrowed for a period of 14 days. If you need more time, please consider renewing your loan if the book is not on hold.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
